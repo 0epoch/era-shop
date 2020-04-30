@@ -23,6 +23,13 @@ func Load() *gin.Engine{
 	}
 	r.GET(apiRoot+"/user", middleware.Auth(), u.Show)
 
+	//公共API
+	common := handle.Common{}
+	r.Group(apiRoot, middleware.Auth())
+	{
+		v1.POST("/upload", common.Upload)
+	}
+
 	//分类
 	category := handle.NewCategoryHandle(&service.CategoryService{})
 	v1 = r.Group(apiRoot, middleware.Auth())

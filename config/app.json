@@ -7,6 +7,9 @@
         "username": "root",
         "password": "",
         "charset": "utf8mb4"
+    },
+    "file": {
+        "path": "runtime/upload",
+        "image_max_size": 2
     }
-
 }
