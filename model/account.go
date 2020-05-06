@@ -8,10 +8,10 @@ const (
 )
 type Account struct {
 	ID int64 `json:"id"`
-	Username string `json:"username"`
-	Phone string `json:"phone"`
-	Email string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" form:"username"`
+	Phone string `json:"phone" form:"phone"`
+	Email string `json:"email" form:"email"`
+	Password string `json:"password" form:"password"`
 	LastLogin time.Time `json:"last_login"`
 	LastIP string `json:"last_ip"`
 	Status int `json:"status"`

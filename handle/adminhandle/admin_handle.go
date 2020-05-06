@@ -1,4 +1,4 @@
-package handle
+package adminhandle
 
 import (
 	"era-shop.xyz/era-shop/model"
@@ -8,14 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
-type User struct {}
 
-func (uh *User) Show(c *gin.Context) {
-	response.Success(c, c.Param("id"))
-}
+type AdminHandle struct {}
 
-//注册
-func (uh *User) Register(c *gin.Context) {
+func (a *AdminHandle) Create(c *gin.Context) {
 	accountBind := &model.Account{}
 	err := c.ShouldBind(accountBind)
 	if err != nil {
@@ -29,26 +25,35 @@ func (uh *User) Register(c *gin.Context) {
 		"phone": accountBind.Phone,
 		"email": accountBind.Email,
 	}
+
 	account, err := service.CreateAccount(data)
 	if err != nil {
-		response.Failed(c, "注册失败！")
+		response.Failed(c, "添加失败！")
 		return
 	}
 
-	userData := map[string]interface{}{
-		"nickname": "",
-		"avatar": "",
+	adminData := map[string]interface{}{
+		"name": c.PostForm("name"),
+		"phone": account.Phone,
+		"accountID": account.ID,
+		"avatar": c.PostForm("avatar"),
 	}
-	user, err := service.CreateUser(account, userData)
+	admin, err := service.CreateAdmin(account, adminData)
 	if err != nil {
-		response.Failed(c, "注册失败！")
+		response.Failed(c, "添加失败！")
 		return
 	}
-	response.Success(c, user)
+	//设置管理员角色
+	adminRole := map[string]interface{}{
+		"accountID": account.ID,
+		"adminID": admin.ID,
+		"roles": c.PostForm("roles"),
+	}
+	service.CreateAdminRole(adminRole)
+	response.Success(c, admin)
 }
 
-//登录
-func (uh *User) Login(c *gin.Context) {
+func (a *AdminHandle) Login(c *gin.Context) {
 	pwd := c.PostForm("password")
 	account := model.Account{}
 	model.DB.Where("phone = ?", c.PostForm("phone")).First(&account)
@@ -71,4 +76,30 @@ func (uh *User) Login(c *gin.Context) {
 	}
 
 	response.Success(c, token)
+}
+
+func (a *AdminHandle) Admin(c *gin.Context) {
+
+}
+
+func (a *AdminHandle) Admins(c *gin.Context) {
+
+}
+
+func (a *AdminHandle) Modify(c *gin.Context) {
+
+}
+
+func (a *AdminHandle) Deleted(c *gin.Context) {
+
+}
+
+func (a *AdminHandle) Menus(c *gin.Context) {
+	accountID, _ := c.Get("accountID")
+	menus, err := service.FindAdminMenus(accountID.(int64))
+	if err != nil {
+		response.Failed(c, "查找失败！")
+		return
+	}
+	response.Success(c, menus)
 }

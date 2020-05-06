@@ -14,8 +14,9 @@ func Load() *gin.Engine{
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	u := handle.User{}
+	AdminRouter(r)
 
+	u := handle.User{}
 	v1 := r.Group(apiRoot)
 	{
 		v1.POST("/login", u.Login)
